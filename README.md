@@ -9,27 +9,25 @@ CRM básico para taller mecánico — control de inventario, costos, ventas y da
 ## 📋 Características
 
 ### 📦 Inventario
-- Alta, baja y edición de productos
-- Campos: nombre, descripción, SKU, stock, precio compra/venta, proveedor
-- Alertas visuales de stock bajo
+- Alta, baja y edición de productos con todos los campos: nombre, descripción, SKU, stock, precio compra/venta, proveedor
+- Alertas visuales de stock bajo (verde / amarillo / rojo)
 - Búsqueda y filtros en tiempo real
 - Exportación a CSV
 
 ### 💰 Control de Costos
-- Registro de gastos: compra de piezas, servicios externos, gastos generales
-- Resumen mensual con gráfica de evolución
-- Histórico completo
+- Registro de gastos por categoría: compra de piezas, servicios externos, gastos generales
+- Resumen mensual con gráfica donut
+- Histórico completo filtrable
 
 ### 🛒 Ventas
 - Registro de ventas de productos o servicios
 - Cálculo automático de ganancia (ingresos − costos)
-- Historial con filtro por fecha
+- Historial con filtro por fecha y tipo
 
 ### 📊 Dashboard
-- Valor total del inventario, ganancias y gastos del mes
+- KPIs: valor total del inventario, ganancias del mes, gastos del mes, alertas stock
 - Gráfico ingresos vs gastos (últimos 6 meses)
-- Top servicios más vendidos
-- Alertas de stock crítico
+- Top 5 servicios/ventas
 
 ---
 
@@ -38,21 +36,16 @@ CRM básico para taller mecánico — control de inventario, costos, ventas y da
 ```bash
 git clone https://github.com/keahi32/taller-crm.git
 cd taller-crm
+# Abre index.html en tu navegador
+open index.html          # macOS
+start index.html         # Windows
+xdg-open index.html      # Linux
 ```
 
-**Opción 1 — Abrir directo:**
+**Con servidor local (recomendado):**
 ```bash
-open index.html        # macOS
-start index.html       # Windows
-xdg-open index.html    # Linux
-```
-
-**Opción 2 — Servidor local (recomendado):**
-```bash
-# Python
 python3 -m http.server 8080
-# Node.js
-npx serve .
+# Abre http://localhost:8080
 ```
 
 ---
@@ -72,16 +65,9 @@ taller-crm/
 │       ├── costs.js
 │       └── sales.js
 ├── seed/data.js
+├── docs/manual.md
 └── README.md
 ```
-
----
-
-## 💾 Datos de ejemplo
-
-Al primer inicio se cargan automáticamente: **15 productos, 10 costos, 12 ventas**.
-
-Para resetear: botón **Restablecer datos** en el sidebar.
 
 ---
 
@@ -92,19 +78,9 @@ Para resetear: botón **Restablecer datos** en el sidebar.
 | UI | HTML5 + CSS3 (custom properties, grid) |
 | Lógica | JavaScript ES2020 (vanilla) |
 | Datos | localStorage |
-| Gráficos | Chart.js v4 |
-| Iconos | Lucide Icons |
+| Gráficos | Chart.js v4 (CDN) |
+| Iconos | Lucide Icons (CDN) |
 | Fuentes | Inter (Google Fonts) |
-
----
-
-## 🔮 Roadmap
-
-- [ ] Backend Node.js + Express + SQLite
-- [ ] API REST multi-dispositivo
-- [ ] Módulo de clientes y órdenes de trabajo
-- [ ] Facturación con PDF
-- [ ] Autenticación de usuarios
 
 ---
 
