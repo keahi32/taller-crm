@@ -32,7 +32,7 @@ const DB = {
     this.seed();
   },
 
-  // ── Productos
+  // ── Productos ──────────────────────────────────────────────────────────────
   getProductos()  { return this._data.productos; },
   getProducto(id) { return this._data.productos.find(p => p.id === id); },
 
@@ -56,9 +56,9 @@ const DB = {
     this.save();
   },
 
-  // ── Costos
-  getCostos()    { return this._data.costos; },
-  getCosto(id)   { return this._data.costos.find(c => c.id === id); },
+  // ── Costos ─────────────────────────────────────────────────────────────────
+  getCostos()  { return this._data.costos; },
+  getCosto(id) { return this._data.costos.find(c => c.id === id); },
 
   addCosto(c) {
     c.id = 'c' + Date.now();
@@ -80,9 +80,9 @@ const DB = {
     this.save();
   },
 
-  // ── Ventas
-  getVentas()    { return this._data.ventas; },
-  getVenta(id)   { return this._data.ventas.find(v => v.id === id); },
+  // ── Ventas ─────────────────────────────────────────────────────────────────
+  getVentas()  { return this._data.ventas; },
+  getVenta(id) { return this._data.ventas.find(v => v.id === id); },
 
   addVenta(v) {
     v.id = 'v' + Date.now();
@@ -100,4 +100,56 @@ const DB = {
   },
 
   deleteVenta(id) {
-    this._data.ventas
+    this._data.ventas = this._data.ventas.filter(v => v.id !== id);
+    this.save();
+  },
+
+  // ── Métricas ───────────────────────────────────────────────────────────────
+  getMetricasMes(year, month) {
+    const ingresos = this._data.ventas
+      .filter(v => { const d = new Date(v.fecha); return d.getFullYear()===year && d.getMonth()+1===month; })
+      .reduce((s, v) => s + v.importe, 0);
+    const gastos = this._data.costos
+      .filter(c => { const d = new Date(c.fecha); return d.getFullYear()===year && d.getMonth()+1===month; })
+      .reduce((s, c) => s + c.importe, 0);
+    const costoVentas = this._data.ventas
+      .filter(v => { const d = new Date(v.fecha); return d.getFullYear()===year && d.getMonth()+1===month; })
+      .reduce((s, v) => s + (v.costo || 0), 0);
+    return { ingresosMes: ingresos, gastosMes: gastos, gananciasMes: ingresos - gastos - costoVentas };
+  },
+
+  getValorInventario() {
+    return this._data.productos.reduce((s, p) => s + p.stock * p.precioVenta, 0);
+  },
+
+  getProductosStockBajo() {
+    return this._data.productos.filter(p => p.stock <= p.stockMinimo);
+  },
+
+  getTopVentas(n = 5) {
+    const map = {};
+    this._data.ventas.forEach(v => { map[v.descripcion] = (map[v.descripcion] || 0) + v.importe; });
+    return Object.entries(map)
+      .sort((a, b) => b[1] - a[1])
+      .slice(0, n)
+      .map(([desc, total]) => ({ desc, total }));
+  },
+
+  getIngresosMensuales(meses = 6) {
+    const result = [];
+    const now = new Date();
+    for (let i = meses - 1; i >= 0; i--) {
+      const d = new Date(now.getFullYear(), now.getMonth() - i, 1);
+      const y = d.getFullYear(), m = d.getMonth() + 1;
+      const label = d.toLocaleString('es-ES', { month: 'short', year: '2-digit' });
+      const ingresos = this._data.ventas
+        .filter(v => { const vd = new Date(v.fecha); return vd.getFullYear()===y && vd.getMonth()+1===m; })
+        .reduce((s, v) => s + v.importe, 0);
+      const gastos = this._data.costos
+        .filter(c => { const cd = new Date(c.fecha); return cd.getFullYear()===y && cd.getMonth()+1===m; })
+        .reduce((s, c) => s + c.importe, 0);
+      result.push({ label, ingresos, gastos });
+    }
+    return result;
+  }
+};
